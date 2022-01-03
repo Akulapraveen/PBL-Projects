@@ -1,0 +1,32 @@
+#importing Libraries
+import pandas as pd
+from sklearn import preprocessing
+from sklearn.naive_bayes import GaussianNB
+from sklearn import metrics
+
+#loading the dataset
+df=pd.read_csv("Project-9_Dataset.csv")
+df
+df.head()
+df.info()
+df.describe()
+
+#checking for null values
+df.isnull().sum()
+
+#since the data is of categorical datatype, we use label encoding to transform the data into numerical datatype
+labelencoder=preprocessing.LabelEncoder()
+df_encoded=df.apply(labelencoder.fit_transform)
+
+df_encoded
+
+#using zip function to create a list of tuples.
+fea=list(zip(df_encoded['Weather'],df_encoded['Temp']))
+fea
+
+#the final! applying the machine learning model to the data
+model = GaussianNB()
+model.fit(fea,df_encoded['Play'])
+
+#the prediction score of this model 
+model.score(fea,df_encoded['Play'])
