@@ -1,0 +1,73 @@
+Aim:Predicting Wine Quality using ML model
+
+#importing Libraries
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+#Reading dataset
+df = pd.read_csv('winequalityN.csv',sep=';')
+df
+df.info()
+df.describe()
+df.head()
+df.tail()
+df.dtypes
+
+# Visualization
+df.hist(bins = 25,figsize(10,10))
+plt.show()
+
+plt.figure(figsize=[10,6])
+plt.bar(df['quality'],df['alcohol'],color='red')
+plt.xlabel('quality')
+plt.ylabel('alcohol')
+
+#ploting heatmap
+plt.figure(figsize=[19,10],facecolor='blue')
+sns.heatmap(df.corr(),annot=True)
+
+for a in range(len(df.corr().columns)):
+    for b in range(a):
+        if abs(df.corr().iloc[a,b]) >0.7:
+            name = df.corr().columns[a]
+            print(name)
+new_df=df.drop('total sulfur dioxide',axis=1)
+new_df.isnull().sum()
+new_df.update(new_df.fillna(new_df.mean()))
+
+# catogerical vars 
+next_df = pd.get_dummies(new_df,drop_first=True)
+
+# display new dataframe
+next_df
+
+from sklearn.preprocessing import LabelEncoder
+l=LabelEncoder()
+df["quality"]=l.fit_transform(df["quality"])
+df
+
+X=df[["alcohol","quality"]]
+X.info()
+X.describe()
+
+Y=df["quality"]
+Y.value_counts()
+
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+
+X_train,X_test,Y_train,Y_test=train_test_split(X,Y,test_size=0.25,random_state=42)
+
+model=RandomForestClassifier()
+model.fit(X_train,Y_train)
+Y_pred=model.predict(X_test)
+Y_pred
+
+from sklearn import metrics
+print("Accuracy : ",metrics.accuracy_score(Y_test,Y_pred))
+
+X_predict=list(model.predict(X_test))
+predicted_df = {'predicted_values':X_predict, 'original_values': Y_test}
+pd.DataFrame(predicted_df).head(20)
